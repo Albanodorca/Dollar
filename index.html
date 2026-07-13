@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0F3D2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dollar.MZ">
+<link rel="manifest" href="manifest.json">
+<title>Dollar.MZ — Loja</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --green-deep:#0F3D2E;
+    --green-mid:#155840;
+    --gold:#C9A227;
+    --gold-bright:#E3BE3F;
+    --cream:#EFEAE0;
+    --ink:#16201B;
+    --ink-soft:#4B5850;
+    --line:rgba(15,61,46,0.14);
+    --white:#FCFBF8;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    overscroll-behavior-y:contain;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--white);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 0 40px rgba(0,0,0,0.06);
+  }
+
+  /* HEADER */
+  header{
+    background:var(--green-deep);
+    background-image:radial-gradient(circle at 85% -20%, var(--green-mid) 0%, var(--green-deep) 55%);
+    color:var(--white);
+    padding:22px 20px 20px;
+    position:sticky; top:0; z-index:20;
+  }
+  .brandrow{display:flex; align-items:center; justify-content:space-between;}
+  .brand{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:-0.01em;
+    display:flex; align-items:baseline; gap:2px;
+  }
+  .brand .cifrao{color:var(--gold-bright);}
+  .loc{
+    font-size:11px;
+    color:var(--gold-bright);
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    font-weight:600;
+    margin-top:2px;
+    opacity:0.85;
+  }
+  .cart-btn{
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.18);
+    color:var(--white);
+    width:42px; height:42px;
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    cursor:pointer;
+  }
+  .cart-badge{
+    position:absolute; top:-6px; right:-6px;
+    background:var(--gold-bright);
+    color:var(--green-deep);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; font-weight:600;
+    min-width:18px; height:18px;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 4px;
+  }
+  .search{
+    margin-top:16px;
+    display:flex; gap:8px; overflow-x:auto;
+    padding-bottom:2px;
+    scrollbar-width:none;
+  }
+  .search::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12.5px; font-weight:600;
+    border:1px solid rgba(255,255,255,0.2);
+    color:rgba(255,255,255,0.75);
+    background:transparent;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--gold-bright);
+    border-color:var(--gold-bright);
+    color:var(--green-deep);
+  }
+
+  /* PRODUCT GRID */
+  main{padding:18px 16px 100px; flex:1;}
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    margin:6px 2px 12px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .section-title span.count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; font-weight:500;
+    color:var(--ink-soft);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .thumb{
+    aspect-ratio:1/1;
+    background:linear-gradient(145deg, #E9E3D4, #DCD5C2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:34px;
+    position:relative;
+  }
+  .thumb .tag{
+    position:absolute; top:8px; left:8px;
+    background:var(--green-deep);
+    color:var(--gold-bright);
+    font-size:9.5px; font-weight:700;
+    letter-spacing:0.06em;
+    padding:3px 7px;
+    border-radius:6px;
+    text-transform:uppercase;
+  }
+  .card-body{padding:10px 10px 12px; display:flex; flex-direction:column; gap:6px;}
+  .p-name{font-size:13px; font-weight:600; line-height:1.3; min-height:34px;}
+  .p-price{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:14px;
+    color:var(--green-deep);
+  }
+  .add-btn{
+    margin-top:2px;
+    background:var(--green-deep);
+    color:var(--white);
+    border:none;
+    border-radius:9px;
+    padding:8px 0;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .add-btn:active{background:var(--green-mid);}
+  .qty-row{
+    margin-top:2px;
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--cream);
+    border-radius:9px;
+    padding:4px;
+  }
+  .qty-row button{
+    width:26px; height:26px;
+    border:none; border-radius:7px;
+    background:var(--white);
+    color:var(--green-deep);
+    font-size:15px; font-weight:700;
+    cursor:pointer;
+  }
+  .qty-row .qty-val{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600; font-size:13px;
+  }
+
+  /* CART DRAWER */
+  .overlay{
+    position:fixed; inset:0; background:rgba(15,25,20,0.45);
+    z-index:29; opacity:0; pointer-events:none; transition:opacity 0.25s;
+  }
+  .overlay.show{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; left:0; right:0; bottom:0;
+    max-width:480px; margin:0 auto;
+    background:var(--white);
+    border-radius:20px 20px 0 0;
+    z-index:30;
+    transform:translateY(100%);
+    transition:transform 0.3s cubic-bezier(.32,.72,0,1);
+    max-height:82vh;
+    display:flex; flex-direction:column;
+  }
+  .drawer.show{transform:translateY(0);}
+  .drawer-handle{
+    width:36px; height:4px; background:var(--line);
+    border-radius:2px; margin:10px auto 4px;
+  }
+  .drawer-head{
+    padding:10px 20px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--line);
+  }
+  .drawer-head h3{
+    font-family:'Fraunces', serif; font-size:17px; margin:0; font-weight:600;
+  }
+  .close-x{
+    background:var(--cream); border:none; width:30px; height:30px;
+    border-radius:9px; cursor:pointer; font-size:16px; color:var(--ink-soft);
+  }
+  .receipt{
+    padding:16px 20px; overflow-y:auto; flex:1;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .receipt-empty{
+    text-align:center; padding:40px 10px; color:var(--ink-soft);
+    font-family:'Inter', sans-serif; font-size:13.5px;
+  }
+  .rline{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:9px 0; border-bottom:1px dashed var(--line);
+    font-size:12.5px; gap:10px;
+  }
+  .rline .rname{font-family:'Inter', sans-serif; font-weight:600; font-size:13px; color:var(--ink); flex:1;}
+  .rline .rmeta{color:var(--ink-soft); font-size:11.5px;}
+  .rline .rprice{font-weight:600; color:var(--green-deep); white-space:nowrap;}
+  .rline .rrm{
+    background:none; border:none; color:#B04A3B; font-size:11px;
+    font-family:'Inter', sans-serif; font-weight:600; cursor:pointer; padding:0;
+  }
+  .rtotal{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-top:14px; margin-top:6px; border-top:2px solid var(--ink);
+    font-size:13.5px; font-weight:600;
+  }
+  .rtotal .val{font-size:19px; color:var(--green-deep);}
+  .drawer-foot{padding:14px 20px 20px; border-top:1px solid var(--line);}
+  .checkout-btn{
+    width:100%; border:none; border-radius:12px; padding:15px 0;
+    background:#25D366; color:#fff; font-weight:700; font-size:14.5px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer; font-family:'Inter', sans-serif;
+  }
+  .checkout-btn:disabled{background:#B9C4BE; cursor:not-allowed;}
+  .checkout-hint{
+    text-align:center; font-size:11px; color:var(--ink-soft);
+    margin-top:8px; font-family:'Inter', sans-serif;
+  }
+
+  /* STICKY BOTTOM BAR */
+  .cart-bar{
+    position:fixed; left:0; right:0; bottom:14px;
+    max-width:440px; margin:0 auto;
+    background:var(--green-deep);
+    color:var(--white);
+    border-radius:14px;
+    padding:13px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 10px 30px rgba(15,61,46,0.35);
+    z-index:15;
+    transform:translateY(150%);
+    transition:transform 0.3s cubic-bezier(.32,.72,0,1);
+    cursor:pointer;
+  }
+  .cart-bar.show{transform:translateY(0);}
+  .cart-bar-left{display:flex; align-items:center; gap:10px;}
+  .cart-bar-count{
+    background:var(--gold-bright); color:var(--green-deep);
+    width:24px; height:24px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700;
+  }
+  .cart-bar-text{font-size:13px; font-weight:600;}
+  .cart-bar-total{
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:14.5px;
+    color:var(--gold-bright);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="brandrow">
+      <div>
+        <div class="brand"><span class="cifrao">$</span>ollar.MZ</div>
+        <div class="loc">Maputo · Moçambique</div>
+      </div>
+      <div class="cart-btn" id="cartIconBtn">
+        🛒
+        <div class="cart-badge" id="cartBadge" style="display:none">0</div>
+      </div>
+    </div>
+    <div class="search" id="categoryChips"></div>
+  </header>
+
+  <main>
+    <div class="section-title">
+      <span id="sectionLabel">Todos os produtos</span>
+      <span class="count" id="sectionCount"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <div class="cart-bar" id="cartBar">
+    <div class="cart-bar-left">
+      <div class="cart-bar-count" id="barCount">0</div>
+      <div class="cart-bar-text">Ver carrinho</div>
+    </div>
+    <div class="cart-bar-total" id="barTotal">0 MT</div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-head">
+    <h3>O seu pedido</h3>
+    <button class="close-x" id="closeDrawer">✕</button>
+  </div>
+  <div class="receipt" id="receipt"></div>
+  <div class="drawer-foot">
+    <button class="checkout-btn" id="checkoutBtn">
+      <span>Finalizar via WhatsApp</span>
+    </button>
+    <div class="checkout-hint">Confirma o pedido e o pagamento (M-Pesa / e-Mola) diretamente com a loja</div>
+  </div>
+</div>
+
+<script>
+/* ======= CONFIGURAÇÃO ======= */
+const WHATSAPP_NUMBER = "258840000000"; // TROCAR pelo número da Dollar.MZ (formato: 258 + número, sem +)
+
+/* ======= CATÁLOGO (editar/expandir aqui) ======= */
+const PRODUCTS = [
+  { id:1, name:"Fones Bluetooth TWS Pro", price:1250, category:"Tech", emoji:"🎧", tag:"Popular" },
+  { id:2, name:"Powerbank 20000mAh", price:1800, category:"Tech", emoji:"🔋", tag:"" },
+  { id:3, name:"Smartwatch Fitness X7", price:2600, category:"Tech", emoji:"⌚", tag:"Novo" },
+  { id:4, name:"Suporte de Telemóvel Veicular", price:450, category:"Tech", emoji:"📱", tag:"" },
+  { id:5, name:"Sabonete de Colágeno Caracol", price:650, category:"Beleza", emoji:"🧼", tag:"Popular" },
+  { id:6, name:"Kit Skincare Facial 5 Peças", price:1400, category:"Beleza", emoji:"🧴", tag:"" },
+  { id:7, name:"Máscara de Argila Purificante", price:380, category:"Beleza", emoji:"🫙", tag:"" },
+  { id:8, name:"Luminária LED RGB Quarto", price:950, category:"Casa", emoji:"💡", tag:"Novo" },
+  { id:9, name:"Organizador de Gavetas 8un", price:700, category:"Casa", emoji:"🗄️", tag:"" },
+  { id:10,name:"Garrafa Térmica Inox 1L", price:520, category:"Casa", emoji:"🍶", tag:"" },
+  { id:11,name:"Mochila Impermeável Urban", price:1600, category:"Moda", emoji:"🎒", tag:"" },
+  { id:12,name:"Óculos de Sol Polarizados", price:590, category:"Moda", emoji:"🕶️", tag:"" },
+];
+
+const CATEGORIES = ["Todos", ...Array.from(new Set(PRODUCTS.map(p=>p.category)))];
+
+/* ======= ESTADO ======= */
+let cart = {};       // { productId: qty }
+let activeCat = "Todos";
+
+/* ======= HELPERS ======= */
+const fmt = n => n.toLocaleString('pt-PT') + " MT";
+const $ = id => document.getElementById(id);
+
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function cartTotal(){
+  return Object.entries(cart).reduce((sum,[id,qty])=>{
+    const p = PRODUCTS.find(pr=>pr.id==id);
+    return sum + (p ? p.price*qty : 0);
+  },0);
+}
+
+/* ======= RENDER: CHIPS ======= */
+function renderChips(){
+  const wrap = $("categoryChips");
+  wrap.innerHTML = "";
+  CATEGORIES.forEach(cat=>{
+    const b = document.createElement("button");
+    b.className = "chip" + (cat===activeCat ? " active" : "");
+    b.textContent = cat;
+    b.onclick = ()=>{ activeCat = cat; renderChips(); renderGrid(); };
+    wrap.appendChild(b);
+  });
+}
+
+/* ======= RENDER: GRID ======= */
+function renderGrid(){
+  const grid = $("grid");
+  grid.innerHTML = "";
+  const list = activeCat==="Todos" ? PRODUCTS : PRODUCTS.filter(p=>p.category===activeCat);
+  $("sectionLabel").textContent = activeCat==="Todos" ? "Todos os produtos" : activeCat;
+  $("sectionCount").textContent = list.length + " itens";
+
+  list.forEach(p=>{
+    const qty = cart[p.id] || 0;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="thumb">
+        ${p.tag ? `<div class="tag">${p.tag}</div>` : ""}
+        <span>${p.emoji}</span>
+      </div>
+      <div class="card-body">
+        <div class="p-name">${p.name}</div>
+        <div class="p-price">${fmt(p.price)}</div>
+        <div class="qtyholder"></div>
+      </div>
+    `;
+    const holder = card.querySelector(".qtyholder");
+    if(qty===0){
+      const btn = document.createElement("button");
+      btn.className = "add-btn";
+      btn.innerHTML = "+ Adicionar";
+      btn.onclick = ()=>{ changeQty(p.id, 1); };
+      holder.appendChild(btn);
+    } else {
+      const row = document.createElement("div");
+      row.className = "qty-row";
+      row.innerHTML = `
+        <button data-act="minus">−</button>
+        <span class="qty-val">${qty}</span>
+        <button data-act="plus">+</button>
+      `;
+      row.querySelector('[data-act="minus"]').onclick = ()=>changeQty(p.id, -1);
+      row.querySelector('[data-act="plus"]').onclick = ()=>changeQty(p.id, 1);
+      holder.appendChild(row);
+    }
+    grid.appendChild(card);
+  });
+}
+
+function changeQty(id, delta){
+  const current = cart[id] || 0;
+  const next = current + delta;
+  if(next <= 0){ delete cart[id]; } else { cart[id] = next; }
+  renderGrid();
+  renderCartUI();
+}
+
+/* ======= RENDER: CART BAR + BADGE ======= */
+function renderCartUI(){
+  const count = cartCount();
+  const total = cartTotal();
+
+  $("cartBadge").style.display = count>0 ? "flex" : "none";
+  $("cartBadge").textContent = count;
+
+  const bar = $("cartBar");
+  if(count>0){
+    bar.classList.add("show");
+    $("barCount").textContent = count;
+    $("barTotal").textContent = fmt(total);
+  } else {
+    bar.classList.remove("show");
+  }
+  renderReceipt();
+}
+
+/* ======= RENDER: RECEIPT (drawer) ======= */
+function renderReceipt(){
+  const el = $("receipt");
+  const entries = Object.entries(cart);
+  const checkoutBtn = $("checkoutBtn");
+
+  if(entries.length===0){
+    el.innerHTML = `<div class="receipt-empty">O seu carrinho está vazio.<br>Adicione produtos para continuar.</div>`;
+    checkoutBtn.disabled = true;
+    return;
+  }
+  checkoutBtn.disabled = false;
+
+  let html = "";
+  entries.forEach(([id,qty])=>{
+    const p = PRODUCTS.find(pr=>pr.id==id);
+    if(!p) return;
+    html += `
+      <div class="rline">
+        <div style="flex:1">
+          <div class="rname">${p.name}</div>
+          <div class="rmeta">${qty} × ${fmt(p.price)} · <button class="rrm" data-id="${p.id}">remover</button></div>
+        </div>
+        <div class="rprice">${fmt(p.price*qty)}</div>
+      </div>
+    `;
+  });
+  html += `
+    <div class="rtotal">
+      <span>TOTAL</span>
+      <span class="val">${fmt(cartTotal())}</span>
+    </div>
+  `;
+  el.innerHTML = html;
+  el.querySelectorAll(".rrm").forEach(btn=>{
+    btn.onclick = ()=>{ delete cart[btn.dataset.id]; renderGrid(); renderCartUI(); };
+  });
+}
+
+/* ======= DRAWER OPEN/CLOSE ======= */
+function openDrawer(){
+  $("overlay").classList.add("show");
+  $("drawer").classList.add("show");
+}
+function closeDrawerFn(){
+  $("overlay").classList.remove("show");
+  $("drawer").classList.remove("show");
+}
+$("cartIconBtn").onclick = openDrawer;
+$("cartBar").onclick = openDrawer;
+$("closeDrawer").onclick = closeDrawerFn;
+$("overlay").onclick = closeDrawerFn;
+
+/* ======= CHECKOUT → WHATSAPP ======= */
+$("checkoutBtn").onclick = ()=>{
+  const entries = Object.entries(cart);
+  if(entries.length===0) return;
+
+  let msg = "Olá Dollar.MZ! Quero fazer este pedido:\n\n";
+  entries.forEach(([id,qty])=>{
+    const p = PRODUCTS.find(pr=>pr.id==id);
+    if(!p) return;
+    msg += `• ${p.name} (x${qty}) — ${fmt(p.price*qty)}\n`;
+  });
+  msg += `\nTOTAL: ${fmt(cartTotal())}\n\nNome:\nBairro/Endereço:\nMétodo de pagamento (M-Pesa/e-Mola):`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, "_blank");
+};
+
+/* ======= INIT ======= */
+renderChips();
+renderGrid();
+renderCartUI();
+
+/* ======= PWA: registar service worker ======= */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
